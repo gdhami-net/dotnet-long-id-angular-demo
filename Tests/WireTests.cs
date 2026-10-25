@@ -91,4 +91,17 @@ public class WireTests(WebApplicationFactory<Program> factory, ITestOutputHelper
         Assert.Equal(without, withAttr);
         Assert.Contains("\"type\":[\"integer\",\"string\"]", withAttr);
     }
+
+    [Fact]
+    public async Task With_strict_reading_the_openapi_document_says_integer_for_the_unattributed_id()
+    {
+        var strict = factory.WithWebHostBuilder(b => b.UseSetting("StrictNumbers", "true"));
+        var text = await strict.CreateClient().GetStringAsync("/openapi/v1.json");
+        var schemas = JsonNode.Parse(text)!["components"]!["schemas"]!;
+        var withAttr = schemas["Order"]!["properties"]!["id"]!.ToJsonString();
+        var without = schemas["RawOrder"]!["properties"]!["id"]!.ToJsonString();
+        output.WriteLine($"strict: Order.id    {withAttr}\nstrict: RawOrder.id {without}");
+        Assert.Contains("\"type\":[\"integer\",\"string\"]", withAttr);
+        Assert.DoesNotContain("string", without);
+    }
 }

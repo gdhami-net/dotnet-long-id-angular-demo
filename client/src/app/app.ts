@@ -79,7 +79,8 @@ export class App implements OnInit {
 
     // 3. API unchanged: read the text, parse the IDs from their source text.
     const text = await firstValueFrom(this.http.get('/raw/orders', { responseType: 'text' }));
-    const s = (parseWithExactIds(text) as Order[])[0];
+    const orders = parseWithExactIds(text) as Order[];
+    const s = orders[0];
     rows.push({
       name: 'source-text',
       sentByServer: sent,

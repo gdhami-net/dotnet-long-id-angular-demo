@@ -64,8 +64,8 @@ Open `http://localhost:5351/` to see the three cases in a table.
 | Path | What it is |
 |---|---|
 | `Api/Orders.cs` | `RawOrder` (the default) and `Order` (the attribute on `Id`), and the two seeded orders |
-| `Api/Program.cs` | `/raw/orders` and `/orders`, each with GET, GET by id and PUT; `GlobalNumbersAsStrings` switches on the global setting |
-| `Tests/WireTests.cs` | The JSON text each endpoint writes, the 404 on the way back, the string round trip, web defaults, the global setting, the OpenAPI schema |
+| `Api/Program.cs` | `/raw/orders` and `/orders`, each with GET, GET by id and PUT; `GlobalNumbersAsStrings` switches on the global setting, `StrictNumbers` turns off quoted-number reading |
+| `Tests/WireTests.cs` | The JSON text each endpoint writes, the 404 on the way back, the string round trip, web defaults, the global setting, the OpenAPI schema (default and strict) |
 | `Tests/ShapeTests.cs` | The attribute on a `long?` and a `List<long>` |
 | `client/src/app/app.ts` | The page: as is, string ID, source-text reviver; each sends the ID back |
 | `client/src/app/parse-ids.ts` | The reviver |
@@ -93,7 +93,9 @@ Open `http://localhost:5351/` to see the three cases in a table.
   `JsonSerializerOptions` (in a test, a background job, a message handler).
 - **OpenAPI** (`Microsoft.AspNetCore.OpenApi` 10.0.13, document version 3.1.1) gives
   the ID `"type":["integer","string"]` with and without the attribute: it describes
-  what the server reads, which the web defaults already widen. A generated
+  what the server reads, which the web defaults already widen. With a global
+  `NumberHandling = Strict` (the `StrictNumbers` switch), the plain ID drops to
+  `"type":"integer"` while the attributed one keeps `["integer","string"]`. A generated
   client types it `number | string` either way. Say in the API notes that the ID
   is written as a string.
 - **No custom converter needed** for `long?` or `List<long>`: the attribute covers

@@ -13,6 +13,14 @@ if (builder.Configuration.GetValue<bool>("GlobalNumbersAsStrings"))
             JsonNumberHandling.WriteAsString | JsonNumberHandling.AllowReadingFromString);
 }
 
+// Also off by default: turns off the web defaults' quoted-number reading, to
+// show where the OpenAPI document's "integer or string" comes from.
+if (builder.Configuration.GetValue<bool>("StrictNumbers"))
+{
+    builder.Services.ConfigureHttpJsonOptions(o =>
+        o.SerializerOptions.NumberHandling = JsonNumberHandling.Strict);
+}
+
 var app = builder.Build();
 
 app.MapOpenApi();
